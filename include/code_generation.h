@@ -2,52 +2,42 @@
 #define CODE_GENERATION_H
 
 #include <stdbool.h>
+#include "constants.h"
 
-/* Constants */
-#define MAX_OPERANDS 2
-#define MAX_SYMBOL_LENGTH 31
-#define MAX_OPERAND_LENGTH 20
-
-/* Enums */
-typedef enum {
-    ADDRESSING_IMMEDIATE,
-    ADDRESSING_DIRECT,
-    ADDRESSING_REGISTER_INDIRECT,
-    ADDRESSING_REGISTER_DIRECT
-} AddressingMode;
-
-/* Structs */
 typedef struct {
     const char *name;
     int opcode;
     int operand_count;
 } Instruction;
 
-typedef struct {
-    int first_word;
-    int second_word;
-    int third_word;
-    bool second_word_exists;
-    bool third_word_exists;
-    bool is_external_reference;
-    char external_symbol[MAX_SYMBOL_LENGTH + 1];
-} MachineCode;
-
 /* Function Prototypes */
 
-/* Main function to generate machine code */
+/**
+ * Generates machine code for a given operation and its operands.
+ * 
+ * @param operation The assembly operation (e.g., "mov", "add")
+ * @param operands The operands for the operation
+ * @param code Pointer to a MachineCode struct to store the generated code
+ * @return true if code generation was successful, false otherwise
+ */
 bool generate_machine_code(const char *operation, const char *operands, MachineCode *code);
 
-/* Helper functions */
-static int get_register_number(const char *reg);
-static AddressingMode get_addressing_mode(const char *operand);
-static bool encode_operand(const char *operand, int *value, bool *is_external);
+/**
+ * Determines the addressing mode of a given operand.
+ * 
+ * @param operand The operand to analyze
+ * @return The addressing mode as defined in the AddressingMode enum
+ */
+AddressingMode get_addressing_mode(const char *operand);
 
-/* Extern declarations for functions from other modules that code_generation.c might use */
-extern Symbol *get_symbol(const char *name);
-extern bool is_external_symbol(const char *name);
-
-/* The instruction set */
-extern const Instruction instruction_set[];
+/**
+ * Encodes an individual operand into its machine code representation.
+ * 
+ * @param operand The operand to encode
+ * @param value Pointer to store the encoded value
+ * @param is_external Pointer to a bool indicating if the operand is an external reference
+ * @return true if encoding was successful, false otherwise
+ */
+bool encode_operand(const char *operand, int *value, bool *is_external);
 
 #endif /* CODE_GENERATION_H */

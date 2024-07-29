@@ -11,27 +11,11 @@
 
 /* Function Prototypes */
 
-/* Process .data directive */
 bool process_data_directive(const char *operands);
-
-/* Process .string directive */
 bool process_string_directive(const char *operands);
-
-/* Reset the data counter */
+bool process_entry_extern_directive(const char *directive, const char *operands);
 void reset_data_counter();
-
-/* Get the current value of the data counter */
 int get_data_counter();
-
-/* Write the data image to the output file */
 void write_data_image(FILE *file);
-
-/* Helper functions */
-static bool validate_number(long value);
-static bool add_to_data_image(int value);
-
-/* Extern declarations for functions from other modules that data_generation.c might use */
-extern int string_to_int(const char *str, bool *success);
-extern void trim(char *str);
 
 #endif /* DATA_GENERATION_H */

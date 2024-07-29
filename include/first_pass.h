@@ -2,11 +2,7 @@
 #define FIRST_PASS_H
 
 #include <stdbool.h>
-
-/* Constants */
-#define MAX_LINE_LENGTH 80
-#define MAX_LABEL_LENGTH 31
-#define MAX_OPERATION_LENGTH 10
+#include "constants.h"
 
 /* Function Prototypes */
 
@@ -14,18 +10,19 @@
 bool first_pass(const char *filename);
 
 /* Helper functions */
-static bool process_line(const char *line, int line_number);
-static bool process_data(const char *operands);
-static bool process_string(const char *operands);
-static bool process_entry_extern(const char *operation, const char *operands);
-static bool process_instruction(const char *operation, const char *operands);
-static int get_instruction_length(const char *operation, const char *operands);
+bool process_line(const char *line, int line_number);
+
+/* Utility function */
+bool is_directive(const char *operation);
 
 /* Extern declarations for functions from other modules that first_pass.c might use */
-extern bool add_symbol(const char *name, int value, int type);
+extern bool add_symbol(const char *name, int value, SymbolType type);
 extern bool is_valid_label(const char *label);
 extern bool is_reserved_word(const char *word);
 extern void update_data_symbols(int ic_value);
+extern bool process_data_directive(const char *operands);
+extern bool process_string_directive(const char *operands);
+extern bool process_entry_extern_directive(const char *directive, const char *operands);
 
 /* Extern declarations for global variables that first_pass.c might use */
 extern int IC;  /* Instruction Counter */

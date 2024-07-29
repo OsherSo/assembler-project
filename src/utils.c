@@ -188,3 +188,10 @@ void log_warning(const char *format, ...) {
     fprintf(stderr, "\n");
     va_end(args);
 }
+
+bool is_directive(const char *operation) {
+    return (strcmp(operation, "data") == 0 ||
+            strcmp(operation, "string") == 0 ||
+            strcmp(operation, "entry") == 0 ||
+            strcmp(operation, "extern") == 0);
+}

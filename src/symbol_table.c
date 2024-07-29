@@ -98,6 +98,7 @@ void print_symbol_table() {
                 case SYMBOL_DATA: printf("Data\n"); break;
                 case SYMBOL_EXTERNAL: printf("External\n"); break;
                 case SYMBOL_ENTRY: printf("Entry\n"); break;
+                case SYMBOL_UNKNOWN: printf("Unknown\n"); break;
             }
             current = current->next;
         }

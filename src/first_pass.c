@@ -5,11 +5,11 @@
 #include "symbol_table.h"
 #include "utils.h"
 #include "constants.h"
+#include "data_generation.h"
 
-static int instruction_counter = MEMORY_START;
-static int data_counter = 0;
+int IC = MEMORY_START;  /* Instruction Counter */
+int DC = 0;  /* Data Counter */
 
-static bool process_line(const char *line, int line_number);
 static bool process_label(const char *label);
 static bool process_directive(const char *directive, const char *operands);
 static bool process_instruction(const char *operation, const char *operands);
@@ -28,7 +28,7 @@ bool first_pass(const char *filename) {
 
     while (fgets(line, sizeof(line), file)) {
         line_number++;
-        line[strcspn(line, "\n")] = 0;  // Remove newline character
+        line[strcspn(line, "\n")] = 0;  /* Remove newline character */
 
         if (is_empty_or_comment(line)) {
             continue;
@@ -41,11 +41,11 @@ bool first_pass(const char *filename) {
     }
 
     fclose(file);
-    update_data_symbols(instruction_counter);
+    update_data_symbols(IC);
     return success;
 }
 
-static bool process_line(const char *line, int line_number) {
+bool process_line(const char *line, int line_number) {
     char label[MAX_LABEL_LENGTH] = {0};
     char operation[MAX_OPERATION_LENGTH] = {0};
     char operands[MAX_LINE_LENGTH] = {0};
@@ -70,7 +70,7 @@ static bool process_label(const char *label) {
         fprintf(stderr, "Invalid label: %s\n", label);
         return false;
     }
-    return add_symbol(label, instruction_counter, SYMBOL_CODE);
+    return add_symbol(label, IC, SYMBOL_CODE);
 }
 
 static bool process_directive(const char *directive, const char *operands) {
@@ -90,32 +90,21 @@ static bool process_instruction(const char *operation, const char *operands) {
     if (instruction_length == -1) {
         return false;
     }
-    instruction_counter += instruction_length;
+    IC += instruction_length;
     return true;
 }
 
 static int calculate_instruction_length(const char *operation, const char *operands) {
-    // Implement logic to determine instruction length based on operation and operands
-    // This is a placeholder implementation
-    return 1;  // Assume all instructions are 1 word long for simplicity
+    /* Implement logic to determine instruction length based on operation and operands */
+    /* This is a placeholder implementation */
+    (void)operation; /* Suppress unused parameter warning */
+    (void)operands;  /* Suppress unused parameter warning */
+    return 1;  /* Assume all instructions are 1 word long for simplicity */
 }
 
-bool process_data_directive(const char *operands) {
-    // Implementation for .data directive
-    // Parse numbers, update data_counter, etc.
-    return true;
-}
-
-bool process_string_directive(const char *operands) {
-    // Implementation for .string directive
-    // Parse string, update data_counter, etc.
-    return true;
-}
-
-bool process_entry_extern_directive(const char *directive, const char *operands) {
-    if (strcmp(directive, "extern") == 0) {
-        return add_symbol(operands, 0, SYMBOL_EXTERNAL);
-    }
-    // For 'entry', we just ignore it in the first pass
-    return true;
+bool is_directive(const char *operation) {
+    return (strcmp(operation, "data") == 0 ||
+            strcmp(operation, "string") == 0 ||
+            strcmp(operation, "entry") == 0 ||
+            strcmp(operation, "extern") == 0);
 }

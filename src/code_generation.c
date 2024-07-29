@@ -8,15 +8,25 @@
 #define MAX_OPERANDS 2
 
 static const Instruction instruction_set[] = {
-    {"mov", 0, 2}, {"cmp", 1, 2}, {"add", 2, 2}, {"sub", 3, 2},
-    {"lea", 4, 2}, {"clr", 5, 1}, {"not", 6, 1}, {"inc", 7, 1},
-    {"dec", 8, 1}, {"jmp", 9, 1}, {"bne", 10, 1}, {"red", 11, 1},
-    {"prn", 12, 1}, {"jsr", 13, 1}, {"rts", 14, 0}, {"stop", 15, 0}
+    {"mov", 0, 2},
+    {"cmp", 1, 2},
+    {"add", 2, 2},
+    {"sub", 3, 2},
+    {"lea", 4, 2},
+    {"clr", 5, 1},
+    {"not", 6, 1},
+    {"inc", 7, 1},
+    {"dec", 8, 1},
+    {"jmp", 9, 1},
+    {"bne", 10, 1},
+    {"red", 11, 1},
+    {"prn", 12, 1},
+    {"jsr", 13, 1},
+    {"rts", 14, 0},
+    {"stop", 15, 0}
 };
 
 static int get_register_number(const char *reg);
-static AddressingMode get_addressing_mode(const char *operand);
-static bool encode_operand(const char *operand, int *value, bool *is_external);
 static const Instruction* find_instruction(const char *operation);
 
 bool generate_machine_code(const char *operation, const char *operands, MachineCode *code) {
@@ -77,14 +87,14 @@ static int get_register_number(const char *reg) {
     return -1;
 }
 
-static AddressingMode get_addressing_mode(const char *operand) {
-    if (operand[0] == '#') return ADDRESSING_IMMEDIATE;
-    if (operand[0] == '*') return ADDRESSING_REGISTER_INDIRECT;
-    if (get_register_number(operand) != -1) return ADDRESSING_REGISTER_DIRECT;
-    return ADDRESSING_DIRECT;
+AddressingMode get_addressing_mode(const char *operand) {
+    if (operand[0] == '#') return ADDR_IMMEDIATE;
+    if (operand[0] == '*') return ADDR_RELATIVE;
+    if (get_register_number(operand) != -1) return ADDR_REGISTER;
+    return ADDR_DIRECT;
 }
 
-static bool encode_operand(const char *operand, int *value, bool *is_external) {
+bool encode_operand(const char *operand, int *value, bool *is_external) {
     int reg_num;
     *is_external = false;
 

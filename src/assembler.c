@@ -67,6 +67,6 @@ static void generate_output_filenames(const char *base_filename, char *am_filena
 }
 
 void cleanup_resources() {
-    // Free any global resources, close files, etc.
-    // This function should be implemented based on your specific needs
+    /* Free any global resources, close files, etc. */
+    /* This function should be implemented based on your specific needs */
 }

@@ -7,14 +7,10 @@
 #include "utils.h"
 #include "constants.h"
 
-static int instruction_counter = MEMORY_START;
-static int data_counter = 0;
+extern int IC;  /* Instruction Counter */
+extern int DC;  /* Data Counter */
 
-static bool process_line_second_pass(const char *line, int line_number, FILE *ob_file, FILE *ext_file, FILE *ent_file);
-static bool process_entry(const char *operands, FILE *ent_file);
-static bool process_instruction_second_pass(const char *operation, const char *operands, FILE *ob_file, FILE *ext_file);
-static void write_data_section(FILE *ob_file);
-static bool write_machine_code(FILE *ob_file, FILE *ext_file, const MachineCode *code);
+static int instruction_counter = MEMORY_START;
 
 bool second_pass(const char *input_filename, const char *ob_filename, 
                  const char *ext_filename, const char *ent_filename) {
@@ -33,12 +29,12 @@ bool second_pass(const char *input_filename, const char *ob_filename,
         return false;
     }
 
-    // Write header to object file
-    fprintf(ob_file, "%d %d\n", instruction_counter - MEMORY_START, data_counter);
+    /* Write header to object file */
+    fprintf(ob_file, "%d %d\n", IC - MEMORY_START, DC);
 
     while (fgets(line, sizeof(line), input_file)) {
         line_number++;
-        line[strcspn(line, "\n")] = 0;  // Remove newline character
+        line[strcspn(line, "\n")] = 0;  /* Remove newline character */
 
         if (is_empty_or_comment(line)) {
             continue;
@@ -60,10 +56,12 @@ bool second_pass(const char *input_filename, const char *ob_filename,
     return success;
 }
 
-static bool process_line_second_pass(const char *line, int line_number, FILE *ob_file, FILE *ext_file, FILE *ent_file) {
+bool process_line_second_pass(const char *line, int line_number, FILE *ob_file, FILE *ext_file, FILE *ent_file) {
     char label[MAX_LABEL_LENGTH] = {0};
     char operation[MAX_OPERATION_LENGTH] = {0};
     char operands[MAX_LINE_LENGTH] = {0};
+
+    (void)line_number; /* Suppress unused parameter warning */
 
     if (!parse_line(line, label, operation, operands)) {
         return false;
@@ -73,14 +71,14 @@ static bool process_line_second_pass(const char *line, int line_number, FILE *ob
         if (strcmp(operation, "entry") == 0) {
             return process_entry(operands, ent_file);
         }
-        // Skip other directives in second pass
+        /* Skip other directives in second pass */
         return true;
     } else {
         return process_instruction_second_pass(operation, operands, ob_file, ext_file);
     }
 }
 
-static bool process_entry(const char *operands, FILE *ent_file) {
+bool process_entry(const char *operands, FILE *ent_file) {
     Symbol *symbol = get_symbol(operands);
     if (!symbol) {
         fprintf(stderr, "Entry symbol %s not found\n", operands);
@@ -90,38 +88,44 @@ static bool process_entry(const char *operands, FILE *ent_file) {
     return true;
 }
 
-static bool process_instruction_second_pass(const char *operation, const char *operands, FILE *ob_file, FILE *ext_file) {
+bool process_instruction_second_pass(const char *operation, const char *operands, FILE *ob_file, FILE *ext_file) {
     MachineCode code;
     if (!generate_machine_code(operation, operands, &code)) {
         return false;
     }
 
-    return write_machine_code(ob_file, ext_file, &code);
-}
-
-static bool write_machine_code(FILE *ob_file, FILE *ext_file, const MachineCode *code) {
-    fprintf(ob_file, "%04d %05o\n", instruction_counter, code->first_word);
+    /* Write machine code to object file */
+    fprintf(ob_file, "%04d %05o\n", instruction_counter, code.first_word);
     instruction_counter++;
 
-    if (code->second_word_exists) {
-        fprintf(ob_file, "%04d %05o\n", instruction_counter, code->second_word);
+    if (code.second_word_exists) {
+        fprintf(ob_file, "%04d %05o\n", instruction_counter, code.second_word);
         instruction_counter++;
     }
 
-    if (code->third_word_exists) {
-        fprintf(ob_file, "%04d %05o\n", instruction_counter, code->third_word);
+    if (code.third_word_exists) {
+        fprintf(ob_file, "%04d %05o\n", instruction_counter, code.third_word);
         instruction_counter++;
     }
 
-    if (code->is_external_reference) {
-        fprintf(ext_file, "%s %04d\n", code->external_symbol, instruction_counter - 1);
+    /* Handle external references */
+    if (code.is_external_reference) {
+        fprintf(ext_file, "%s %04d\n", code.external_symbol, instruction_counter - 1);
     }
 
     return true;
 }
 
-static void write_data_section(FILE *ob_file) {
-    // Write data section to object file
-    // This function should iterate through the data image and write it to the object file
-    // Implement based on your data storage mechanism
+void write_data_section(FILE *ob_file) {
+    /* Write data section to object file */
+    /* This function should iterate through the data image and write it to the object file */
+    /* Implement based on your data storage mechanism */
+    (void)ob_file; /* Suppress unused parameter warning */
+}
+
+bool is_directive(const char *operation) {
+    return (strcmp(operation, "data") == 0 ||
+            strcmp(operation, "string") == 0 ||
+            strcmp(operation, "entry") == 0 ||
+            strcmp(operation, "extern") == 0);
 }
