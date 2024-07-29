@@ -12,9 +12,6 @@ bool first_pass(const char *filename);
 /* Helper functions */
 bool process_line(const char *line, int line_number);
 
-/* Utility function */
-bool is_directive(const char *operation);
-
 /* Extern declarations for functions from other modules that first_pass.c might use */
 extern bool add_symbol(const char *name, int value, SymbolType type);
 extern bool is_valid_label(const char *label);

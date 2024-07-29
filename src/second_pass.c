@@ -122,10 +122,3 @@ void write_data_section(FILE *ob_file) {
     /* Implement based on your data storage mechanism */
     (void)ob_file; /* Suppress unused parameter warning */
 }
-
-bool is_directive(const char *operation) {
-    return (strcmp(operation, "data") == 0 ||
-            strcmp(operation, "string") == 0 ||
-            strcmp(operation, "entry") == 0 ||
-            strcmp(operation, "extern") == 0);
-}

@@ -45,7 +45,7 @@ bool first_pass(const char *filename) {
     return success;
 }
 
-bool process_line(const char *line, int line_number) {
+bool process_line(const char *line, int line_number __attribute__((unused))) {
     char label[MAX_LABEL_LENGTH] = {0};
     char operation[MAX_OPERATION_LENGTH] = {0};
     char operands[MAX_LINE_LENGTH] = {0};
@@ -100,11 +100,4 @@ static int calculate_instruction_length(const char *operation, const char *opera
     (void)operation; /* Suppress unused parameter warning */
     (void)operands;  /* Suppress unused parameter warning */
     return 1;  /* Assume all instructions are 1 word long for simplicity */
-}
-
-bool is_directive(const char *operation) {
-    return (strcmp(operation, "data") == 0 ||
-            strcmp(operation, "string") == 0 ||
-            strcmp(operation, "entry") == 0 ||
-            strcmp(operation, "extern") == 0);
 }

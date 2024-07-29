@@ -18,9 +18,6 @@ bool process_entry(const char *operands, FILE *ent_file);
 bool process_instruction_second_pass(const char *operation, const char *operands, FILE *ob_file, FILE *ext_file);
 void write_data_section(FILE *ob_file);
 
-/* Utility function */
-bool is_directive(const char *operation);
-
 /* Extern declarations for functions from other modules that second_pass.c might use */
 extern bool generate_machine_code(const char *operation, const char *operands, MachineCode *code);
 extern bool is_empty_or_comment(const char *line);
